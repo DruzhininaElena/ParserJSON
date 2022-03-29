@@ -74,11 +74,16 @@ function fieldsTemplate() {
     return "";
   }
   formObj.fields.forEach((field) => {
+    let required = '';
+    if(field.input.required) {
+      required = 'required';
+    }
+
     if (field.input.type === "textarea") {
       fragment += `
       <div class="mb-3">
         <label class="form-label">${field.label || ""}</label>
-        <textarea class="form-control" rows="3"></textarea>
+        <textarea class="form-control" rows="3" ${required}></textarea>
       </div>
     `;
     } else if (field.input.type === "color") {
@@ -90,7 +95,7 @@ function fieldsTemplate() {
       });
       fragment += `
       <label  class="form-label">Choose color scheme</label>
-      <input type="color" list="color" id="colorValue" class="form-control form-control-color" value="${field.input.colors[0]}" >
+      <input type="color" ${required} list="color" id="colorValue" class="form-control form-control-color" value="${field.input.colors[0]}" >
       <datalist id="color">
         ${optionColors}
       </datalist>
@@ -100,12 +105,7 @@ function fieldsTemplate() {
       let technologies = "";
       field.input.technologies.forEach((item) => {
         technologies += `
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="${item}">
-            <label class="form-check-label" for="${item}">
-              ${item}
-            </label>
-          </div>
+          <option value="${item}">${item}</option>
         `;
       });
       fragment += `
@@ -113,7 +113,9 @@ function fieldsTemplate() {
           <label class="form-label">
             ${field.label || ""}
           </label>
-          ${technologies}
+          <select class="form-select" multiple ${required}>
+           ${technologies}
+          </select>
         </div>
       `;
     } else if (field.input.mask) {
@@ -126,13 +128,13 @@ function fieldsTemplate() {
           <label for='${field.id}' class="form-label">
             ${field.label || ""}
           </label>
-          <input type="text" class="form-control" id='${field.id}' />
+          <input type="text" class="form-control" id='${field.id}' ${required} />
         </div>
       `;
     } else if (field.input.type === "checkbox") {
       fragment += `
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="${field.label
+        <input class="form-check-input" type="checkbox" ${required} id="${field.label
           .split(" ")
           .join("")}">
         <label class="form-check-label">
@@ -144,7 +146,7 @@ function fieldsTemplate() {
       fragment += `
         <div class="mb-3">
           <label class="form-label">${field.label || ""}</label>
-          <input class="form-control" type="file" accept="image/png, image/jpeg, .pdf" multiple>
+          <input class="form-control" type="file" accept="image/png, image/jpeg, .pdf" ${required} multiple>
         </div>
       `;
     } else {
@@ -155,7 +157,7 @@ function fieldsTemplate() {
         </label>
         <input type="${field.input.type}" class="form-control" placeholder='${
         field.input.placeholder || ""
-      }' >
+      }' ${required} >
       </div>
     `;
     }
@@ -176,7 +178,7 @@ function referencesTemplate() {
       if (!reference.text || !reference.ref) return;
       fragment += `
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+          <input class="form-check-input" type="checkbox" value="" required>
           <div class='col-lg d-flex'>
             <div >${reference.text} ${
         reference["text without ref"] || ""
